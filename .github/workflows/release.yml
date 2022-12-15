@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - name: Install npm dependencies
+        run: npm ci
+      - name: Build
+        run: |
+          npm run build
+          npm pack
+      - name: Lint
+        run: npm run lint:check
+      - name: Get package and tag version
+        id: get_versions
+        run: |
+          echo "package_json_version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+          echo "tag_version=${GITHUB_REF_NAME:1}" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$([[ $GITHUB_REF_NAME == v*-* ]] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+      - name: Check version match
+        if: steps.get_versions.outputs.package_json_version != steps.get_versions.outputs.tag_version
+        run: |
+          echo "Versions do not match."
+          echo "Version from package.json is ${{ steps.get_versions.outputs.package_json_version }}"
+          echo "Version from tag is ${{ steps.get_versions.outputs.tag_version }}"
+          exit 2
+      - name: Publish package on NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: rwx-research-abq-${{ steps.get_versions.outputs.package_json_version }}.tgz
+          prerelease: ${{ fromJSON(steps.get_versions.outputs.is_prerelease) }}

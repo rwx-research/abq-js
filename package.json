@@ -1,0 +1,30 @@
+{
+  "name": "@rwx-research/abq",
+  "version": "0.1.0-alpha.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rwx-research/abq-js.git"
+  },
+  "license": "ISC",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint --fix --ext .js,.ts src",
+    "lint:check": "eslint --ext .js,.ts src"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.15",
+    "eslint-config-standard-with-typescript": "^24.0.0",
+    "ts-standard": "^12.0.1",
+    "typescript": "^4.9.4"
+  },
+  "files": [
+    "build/*.js",
+    "build/*.d.ts",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
