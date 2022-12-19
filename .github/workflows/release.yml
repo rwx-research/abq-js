@@ -18,6 +18,7 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org
+          scope: '@rwx-research'
           cache: npm
       - name: Install npm dependencies
         run: npm ci
@@ -41,7 +42,7 @@ jobs:
           echo "Version from tag is ${{ steps.get_versions.outputs.tag_version }}"
           exit 2
       - name: Publish package on NPM
-        run: npm publish --access public
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
       - name: Create GitHub release
