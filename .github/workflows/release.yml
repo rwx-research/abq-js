@@ -31,9 +31,11 @@ jobs:
       - name: Get package and tag version
         id: get_versions
         run: |
-          echo "package_json_version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
-          echo "tag_version=${GITHUB_REF_NAME:1}" >> $GITHUB_OUTPUT
-          echo "is_prerelease=$([[ $GITHUB_REF_NAME == v*-* ]] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          {
+            echo "package_json_version=$(jq -r .version package.json)"
+            echo "tag_version=${GITHUB_REF_NAME:1}"
+            echo "is_prerelease=$([[ $GITHUB_REF_NAME == v*-* ]] && echo 'true' || echo 'false')"
+          } >> "$GITHUB_OUTPUT"
       - name: Check version match
         if: steps.get_versions.outputs.package_json_version != steps.get_versions.outputs.tag_version
         run: |
