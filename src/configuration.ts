@@ -29,7 +29,9 @@ interface DisabledAbq {
   shouldRunIndividualTests: false
 }
 
-let abq: EnabledAbq | DisabledAbq
+export type AbqConfiguration = EnabledAbq | DisabledAbq
+
+let abq: AbqConfiguration
 
 if (host && typeof port !== 'undefined') {
   abq = {
@@ -53,6 +55,6 @@ if (host && typeof port !== 'undefined') {
   } as DisabledAbq
 }
 
-export function getAbqConfiguration(): EnabledAbq | DisabledAbq {
+export function getAbqConfiguration(): AbqConfiguration {
   return abq
 }
