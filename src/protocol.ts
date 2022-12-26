@@ -67,7 +67,12 @@ export function protocolReader(stream: Readable, handler: (message: AbqTypes.Ini
 const CURRENT_PROTOCOL_VERSION_MAJOR = 0
 const CURRENT_PROTOCOL_VERSION_MINOR = 1
 
-export function spawnedMessage(): AbqTypes.AbqNativeRunnerSpawnedMessage {
+interface SpawnedMessageInterface {
+  adapterName: string
+  testFramework: string
+  testFrameworkVersion: string
+}
+export function spawnedMessage({ adapterName, testFramework, testFrameworkVersion }: SpawnedMessageInterface): AbqTypes.AbqNativeRunnerSpawnedMessage {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const protocol_version: AbqTypes.ProtocolVersion = {
     type: 'abq_protocol_version',
@@ -78,10 +83,10 @@ export function spawnedMessage(): AbqTypes.AbqNativeRunnerSpawnedMessage {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const runner_specification: AbqTypes.NativeRunnerSpecification = {
     type: 'abq_native_runner_specification',
-    name: 'abq-jest',
+    name: adapterName,
     version: VERSION,
-    test_framework: 'jest',
-    test_framework_version: '29.3.1',
+    test_framework: testFramework,
+    test_framework_version: testFrameworkVersion,
     language: 'javascript',
     language_version: process.version,
     host: 'nodejs ' + process.version
