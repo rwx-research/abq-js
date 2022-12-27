@@ -10,8 +10,12 @@
   "types": "./build/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint --fix --ext .js,.ts src",
-    "lint:check": "eslint --ext .js,.ts src"
+    "format": "eslint --fix --ext .js,.ts src",
+    "lint:check": "eslint --ext .js,.ts src",
+    "test": "npm run lint:check",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm test"
+
   },
   "devDependencies": {
     "@types/node": "^18.11.15",

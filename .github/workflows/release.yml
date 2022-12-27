@@ -22,12 +22,6 @@ jobs:
           cache: npm
       - name: Install npm dependencies
         run: npm ci
-      - name: Build
-        run: |
-          npm run build
-          npm pack
-      - name: Lint
-        run: npm run lint:check
       - name: Get package and tag version
         id: get_versions
         run: |
