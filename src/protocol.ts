@@ -54,7 +54,7 @@ export function protocolReader(stream: Readable, handler: (message: AbqTypes.Ini
 
       // There might be an additional message waiting for us behind the one we
       // just parsed. Reset the buffer to this new message.
-      const newBuffer = buffer.slice(4 + messageSize)
+      const newBuffer = buffer.subarray(4 + messageSize)
       buffer = newBuffer
 
       await handler(JSON.parse(currentMessage))

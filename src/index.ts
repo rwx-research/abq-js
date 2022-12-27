@@ -5,4 +5,5 @@ export {
   protocolWrite,
   spawnedMessage
 } from './protocol'
+export { connect } from './socket'
 export * from './types'
