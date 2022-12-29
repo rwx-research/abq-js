@@ -11,7 +11,7 @@ import * as AbqTypes from './types'
 /**
  * Writes a message using the standard 4-byte header protocol.
  */
-export async function protocolWrite(stream: Writable, data: AbqTypes.ManifestMessage | AbqTypes.TestResultMessage | AbqTypes.AbqNativeRunnerSpawnedMessage | AbqTypes.InitSuccessMessage): Promise<undefined> {
+export async function protocolWrite(stream: Writable, data: AbqTypes.ManifestMessage | AbqTypes.TestResultMessage | AbqTypes.AbqNativeRunnerSpawnedMessage | AbqTypes.InitSuccessMessage): Promise<void> {
   const buffer = Buffer.from(JSON.stringify(data), 'utf8')
   const protocolBuffer = Buffer.alloc(4 + buffer.length)
   protocolBuffer.writeUInt32BE(buffer.length, 0)
