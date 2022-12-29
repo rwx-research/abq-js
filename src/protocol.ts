@@ -32,7 +32,7 @@ export async function protocolWrite(stream: Writable, data: AbqTypes.ManifestMes
  *
  * When a new message is received, `handler` is called.
  */
-export function protocolReader(stream: Readable, handler: (message: AbqTypes.InitMessage | AbqTypes.TestCaseMessage) => Promise<undefined>, { debug } = { debug: false }) {
+export function protocolReader(stream: Readable, handler: (message: AbqTypes.InitMessage | AbqTypes.TestCaseMessage) => Promise<void>, { debug } = { debug: false }) {
   let buffer = Buffer.from('')
   let messageSize: number | undefined
 
