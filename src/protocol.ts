@@ -68,6 +68,7 @@ const CURRENT_PROTOCOL_VERSION_MINOR = 1
 
 interface SpawnedMessageInterface {
   adapterName: string
+  adapterVersion: string
   testFramework: string
   testFrameworkVersion: string
 }
