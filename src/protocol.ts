@@ -66,7 +66,7 @@ export function protocolReader(stream: Readable, handler: (message: AbqTypes.Ini
 const CURRENT_PROTOCOL_VERSION_MAJOR = 0
 const CURRENT_PROTOCOL_VERSION_MINOR = 1
 
-interface SpawnedMessageInterface {
+export interface SpawnedMessageInterface {
   adapterName: string
   adapterVersion: string
   testFramework: string
