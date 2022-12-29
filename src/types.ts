@@ -2,10 +2,7 @@ export interface Test {
   type: 'test'
   id: string
   tags: string[]
-  meta: {
-    fileName: string
-    testName?: string
-  }
+  meta: Record<string, any>
 }
 
 export interface Group {
