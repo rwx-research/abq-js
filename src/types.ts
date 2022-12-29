@@ -25,10 +25,7 @@ export interface ManifestMessage {
 export interface TestCaseMessage {
   test_case: {
     id: string
-    meta: {
-      fileName: string
-      testName?: string
-    }
+    meta: Record<string, any>
   }
 }
 
