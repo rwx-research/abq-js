@@ -1,6 +1,5 @@
 import { Readable, Writable } from 'stream'
 import * as AbqTypes from './types'
-import { VERSION } from './configuration'
 
 /*
  * Communication between abq TCP sockets the following protocol:
@@ -69,10 +68,11 @@ const CURRENT_PROTOCOL_VERSION_MINOR = 1
 
 interface SpawnedMessageInterface {
   adapterName: string
+  adapterVersion: string
   testFramework: string
   testFrameworkVersion: string
 }
-export function spawnedMessage({ adapterName, testFramework, testFrameworkVersion }: SpawnedMessageInterface): AbqTypes.AbqNativeRunnerSpawnedMessage {
+export function spawnedMessage({ adapterName, adapterVersion, testFramework, testFrameworkVersion }: SpawnedMessageInterface): AbqTypes.AbqNativeRunnerSpawnedMessage {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const protocol_version: AbqTypes.ProtocolVersion = {
     type: 'abq_protocol_version',
@@ -84,7 +84,7 @@ export function spawnedMessage({ adapterName, testFramework, testFrameworkVersio
   const runner_specification: AbqTypes.NativeRunnerSpecification = {
     type: 'abq_native_runner_specification',
     name: adapterName,
-    version: VERSION,
+    version: adapterVersion,
     test_framework: testFramework,
     test_framework_version: testFrameworkVersion,
     language: 'javascript',

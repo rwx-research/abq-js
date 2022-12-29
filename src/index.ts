@@ -1,4 +1,4 @@
-export { getAbqConfiguration } from './configuration'
+export { getAbqConfiguration, AbqConfiguration } from './configuration'
 export {
   initSuccessMessage,
   protocolReader,
