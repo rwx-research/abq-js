@@ -13,8 +13,6 @@ interface EnabledAbq {
   host: string
   port: number
   shouldGenerateManifest: boolean
-  shouldHideNativeOutput: boolean
-  shouldRunIndividualTests: boolean
 }
 
 interface DisabledAbq {
@@ -23,8 +21,6 @@ interface DisabledAbq {
   host: undefined
   port: undefined
   shouldGenerateManifest: false
-  shouldHideNativeOutput: false
-  shouldRunIndividualTests: false
 }
 
 export type AbqConfiguration = EnabledAbq | DisabledAbq
@@ -37,9 +33,7 @@ if (host && typeof port !== 'undefined') {
     experiments: {},
     host,
     port,
-    shouldGenerateManifest: !!process.env.ABQ_GENERATE_MANIFEST,
-    shouldHideNativeOutput: !!process.env.ABQ_HIDE_NATIVE_OUTPUT,
-    shouldRunIndividualTests: !!process.env.ABQ_RUN_INDIVIDUAL_TESTS
+    shouldGenerateManifest: !!process.env.ABQ_GENERATE_MANIFEST
   } as EnabledAbq
 } else {
   abq = {
@@ -47,9 +41,7 @@ if (host && typeof port !== 'undefined') {
     experiments: {},
     host: undefined,
     port: undefined,
-    shouldGenerateManifest: false,
-    shouldHideNativeOutput: false,
-    shouldRunIndividualTests: false
+    shouldGenerateManifest: false
   } as DisabledAbq
 }
 
