@@ -11,7 +11,7 @@ import * as AbqTypes from './types'
 /**
  * Writes a message using the standard 4-byte header protocol.
  */
-export async function protocolWrite(stream: Writable, data: AbqTypes.ManifestMessage | AbqTypes.TestResultMessage | AbqTypes.AbqNativeRunnerSpawnedMessage | AbqTypes.InitSuccessMessage): Promise<undefined> {
+export async function protocolWrite(stream: Writable, data: AbqTypes.ManifestMessage | AbqTypes.TestResultMessage | AbqTypes.AbqNativeRunnerSpawnedMessage | AbqTypes.InitSuccessMessage): Promise<void> {
   const buffer = Buffer.from(JSON.stringify(data), 'utf8')
   const protocolBuffer = Buffer.alloc(4 + buffer.length)
   protocolBuffer.writeUInt32BE(buffer.length, 0)
@@ -28,11 +28,69 @@ export async function protocolWrite(stream: Writable, data: AbqTypes.ManifestMes
 }
 
 /**
+ * Reads a single message using the standard 4-byte header protocol.
+ *
+ * Combining this with the `protocolReader` method will have unexpected consequences
+ *
+ * returns null if all messages have been read / testing is over
+ */
+export async function protocolRead(stream: Readable): Promise<AbqTypes.InitMessage | AbqTypes.TestCaseMessage | null> {
+  return await new Promise(resolve => {
+    let messageSize: number | undefined
+    // inspired by https://github.com/dex4er/js-promise-readable/blob/master/src/promise-readable.ts#L25
+    if (!stream.readable || stream.closed || stream.destroyed) {
+      return resolve(null)
+    }
+
+    const readableHandler = () => {
+      if (messageSize === undefined) {
+        const messageSizeBuffer = stream.read(4)
+        if (messageSizeBuffer === null) {
+          return
+        }
+
+        messageSize = messageSizeBuffer.readUInt32BE(0)
+      }
+
+      const messageBuffer = stream.read(messageSize)
+      if (messageBuffer === null) {
+        return
+      }
+      resolve(JSON.parse(messageBuffer.toString('utf8')))
+    }
+
+    const closeHandler = () => {
+      removeListeners()
+      resolve(null)
+    }
+
+    const endHandler = () => {
+      removeListeners()
+      resolve(null)
+    }
+
+    const removeListeners = () => {
+      stream.removeListener('close', closeHandler)
+      stream.removeListener('end', endHandler)
+      stream.removeListener('readable', readableHandler)
+    }
+
+    stream.on('close', closeHandler)
+    stream.on('end', endHandler)
+    stream.on('readable', readableHandler)
+
+    readableHandler()
+  })
+}
+
+/**
  * Reads messages using the standard 4-byte header protocol.
+ *
+ * Combining this with the `protocolRead` method will have unexpected consequences
  *
  * When a new message is received, `handler` is called.
  */
-export function protocolReader(stream: Readable, handler: (message: AbqTypes.InitMessage | AbqTypes.TestCaseMessage) => Promise<undefined>, { debug } = { debug: false }) {
+export function protocolReader(stream: Readable, handler: (message: AbqTypes.InitMessage | AbqTypes.TestCaseMessage) => Promise<void>, { debug } = { debug: false }) {
   let buffer = Buffer.from('')
   let messageSize: number | undefined
 
