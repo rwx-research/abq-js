@@ -36,18 +36,22 @@ export async function protocolWrite(stream: Writable, data: AbqTypes.ManifestMes
  */
 export async function protocolRead(stream: Readable): Promise<AbqTypes.InitMessage | AbqTypes.TestCaseMessage | null> {
   return await new Promise(resolve => {
+    let messageSize: number | undefined
     // inspired by https://github.com/dex4er/js-promise-readable/blob/master/src/promise-readable.ts#L25
     if (!stream.readable || stream.closed || stream.destroyed) {
       return resolve(null)
     }
 
     const readableHandler = () => {
-      const messageSizeBuffer = stream.read(4)
-      if (messageSizeBuffer === null) {
-        return
+      if (messageSize === undefined) {
+        const messageSizeBuffer = stream.read(4)
+        if (messageSizeBuffer === null) {
+          return
+        }
+
+        messageSize = messageSizeBuffer.readUInt32BE(0)
       }
 
-      const messageSize = messageSizeBuffer.readUInt32BE(0)
       const messageBuffer = stream.read(messageSize)
       if (messageBuffer === null) {
         return
