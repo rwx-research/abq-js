@@ -12,7 +12,7 @@
     "build": "tsc",
     "format": "eslint --fix --ext .js,.ts src",
     "lint:check": "eslint --ext .js,.ts src",
-    "test": "npm run lint:check",
+    "test": "npm run build && npm run lint:check",
     "prepack": "npm run build",
     "prepublishOnly": "npm test"
 
