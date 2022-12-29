@@ -1,6 +1,4 @@
 // package.json is outside of TypeScript rootDir.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-export const { version: VERSION } = require('../package.json')
 
 const abqSocket = process.env.ABQ_SOCKET
 let host, portString, port
