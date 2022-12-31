@@ -15,11 +15,20 @@ export interface Group {
 
 export type ManifestMember = Group | Test
 
-export interface ManifestMessage {
+export interface ManifestSuccessMessage {
+  type: 'manifest_success'
   manifest: {
     members: ManifestMember[]
     init_meta: Record<string, any>
   }
+  other_errors?: OutOfBandError[]
+}
+
+export interface ManifestFailureMessage {
+  type: 'manifest_failure'
+  error: OutOfBandError
+  // Any other errors that were observed while generating the manifest.
+  other_errors?: OutOfBandError[]
 }
 
 export interface TestCaseMessage {
@@ -29,22 +38,67 @@ export interface TestCaseMessage {
   }
 }
 
-export type Milliseconds = number
+export type Nanoseconds = bigint
+
+export interface TestResultFailure {
+  type: 'failure'
+  exception?: string
+  backtrace?: string[]
+}
+
+export interface TestResultError {
+  type: 'failure'
+  exception?: string
+  backtrace?: string[]
+}
 
 export type TestResultStatus =
-  | 'failure'
-  | 'success'
-  | 'error'
-  | 'pending'
-  | 'skipped'
+  | TestResultFailure
+  | TestResultError
+  | { type: 'success' }
+  | { type: 'pending' }
+  | { type: 'skipped' }
+  | { type: 'todo' }
+  | { type: 'timed_out' }
 
 export interface TestResult {
   status: TestResultStatus
+  // An opaque ID of the test for use by a native test runner
+  // to identify a test for its operation.
+  // Ideally unique to this run. This now takes on the same role as
+  // https://github.com/rwx-research/test-results-schema/blob/main/v1/t
   id: string
   display_name: string
+
+  // A human-consumable message regarding the outcome of the test.
   output: string | null | undefined
-  runtime: Milliseconds
+  runtime: Nanoseconds
   meta: Record<string, any>
+
+  location?: Location
+
+  started_at?: string // ISO 8601 date-time
+  finished_at?: string // ISO 8601 date-time
+
+  lineage?: string[]
+
+  // Past attempts of this test (primarily useful for intra-run retries).
+  // The first attempt should be first, the most recent attempt should be last.
+  //
+  // This may be populated by both native test runners,
+  // and ABQ if/when ABQ supports test retries.
+  past_attempts?: TestResult[]
+
+  // Other errors, outside of this test, that occurred before or after its execution.
+  other_errors?: OutOfBandError[]
+}
+
+export interface OutOfBandError {
+  message: string
+  backtrace?: string[]
+  exception?: string
+  location?: Location
+  meta?: Record<string, any>
 }
 
 export interface TestResultMessage {
