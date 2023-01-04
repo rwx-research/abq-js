@@ -47,7 +47,7 @@ export interface TestResultFailure {
 }
 
 export interface TestResultError {
-  type: 'failure'
+  type: 'error'
   exception?: string
   backtrace?: string[]
 }
