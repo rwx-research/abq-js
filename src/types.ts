@@ -38,7 +38,7 @@ export interface TestCaseMessage {
   }
 }
 
-export type Nanoseconds = bigint
+export type Nanoseconds = number
 
 export interface TestResultFailure {
   type: 'failure'
