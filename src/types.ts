@@ -101,8 +101,14 @@ export interface OutOfBandError {
   meta?: Record<string, any>
 }
 
-export interface TestResultMessage {
+export type TestResultMessage = SingleTestResultMessage | MultipleTestResultsMessage
+
+export interface SingleTestResultMessage {
   test_result: TestResult
+}
+
+export interface MultipleTestResultsMessage {
+  test_results: TestResult[]
 }
 
 export interface NativeRunnerSpecification {
