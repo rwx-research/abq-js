@@ -1,6 +1,6 @@
 {
   "name": "@rwx-research/abq",
-  "version": "0.1.0-alpha.6",
+  "version": "0.1.0-alpha.7",
   "repository": {
     "type": "git",
     "url": "https://github.com/rwx-research/abq-js.git"
@@ -15,7 +15,6 @@
     "test": "npm run build && npm run lint:check",
     "prepack": "npm run build",
     "prepublishOnly": "npm test"
-
   },
   "devDependencies": {
     "@types/node": "^18.11.15",

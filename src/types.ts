@@ -61,6 +61,14 @@ export type TestResultStatus =
   | { type: 'todo' }
   | { type: 'timed_out' }
 
+export interface Location {
+  file: string
+  /** A 1-indexed line number. */
+  line?: number
+  /** A 1-indexed column number. */
+  column?: number
+}
+
 export interface TestResult {
   status: TestResultStatus
   // An opaque ID of the test for use by a native test runner
