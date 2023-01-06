@@ -109,7 +109,10 @@ export interface OutOfBandError {
   meta?: Record<string, any>
 }
 
-export type TestResultMessage = SingleTestResultMessage | MultipleTestResultsMessage
+export type TestResultMessage =
+  | SingleTestResultMessage
+  | MultipleTestResultsMessage
+  | IncrementalTestResultMessage
 
 export interface SingleTestResultMessage {
   test_result: TestResult
@@ -117,6 +120,20 @@ export interface SingleTestResultMessage {
 
 export interface MultipleTestResultsMessage {
   test_results: TestResult[]
+}
+
+export type IncrementalTestResultMessage =
+  | IncrementalTestResultStep
+  | IncrementalTestResultDone
+
+export interface IncrementalTestResultStep {
+  type: 'incremental_result'
+  one_test_result: TestResult
+}
+
+export interface IncrementalTestResultDone {
+  type: 'incremental_result_done'
+  last_test_result: TestResult
 }
 
 export interface NativeRunnerSpecification {
@@ -148,5 +165,4 @@ export interface InitMessage {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface InitSuccessMessage {
-}
+export interface InitSuccessMessage {}
