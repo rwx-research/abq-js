@@ -37,6 +37,7 @@ export async function protocolWrite(stream: Writable, data: AbqTypes.ManifestSuc
 export async function protocolRead(stream: Readable, { debug } = { debug: false }): Promise<AbqTypes.InitMessage | AbqTypes.TestCaseMessage | null> {
   return await new Promise(resolve => {
     let messageSize: number | undefined
+
     // inspired by https://github.com/dex4er/js-promise-readable/blob/master/src/promise-readable.ts#L25
     if (!stream.readable || stream.closed || stream.destroyed) {
       return resolve(null)
@@ -72,6 +73,7 @@ export async function protocolRead(stream: Readable, { debug } = { debug: false 
         console.log('protocolRead:', `read message ${message}`)
       }
 
+      removeListeners()
       resolve(JSON.parse(message))
     }
 
