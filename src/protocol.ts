@@ -34,7 +34,7 @@ export async function protocolWrite(stream: Writable, data: AbqTypes.ManifestSuc
  *
  * returns null if all messages have been read / testing is over
  */
-export async function protocolRead(stream: Readable): Promise<AbqTypes.InitMessage | AbqTypes.TestCaseMessage | null> {
+export async function protocolRead(stream: Readable, { debug } = { debug: false }): Promise<AbqTypes.InitMessage | AbqTypes.TestCaseMessage | null> {
   return await new Promise(resolve => {
     let messageSize: number | undefined
     // inspired by https://github.com/dex4er/js-promise-readable/blob/master/src/promise-readable.ts#L25
@@ -46,17 +46,33 @@ export async function protocolRead(stream: Readable): Promise<AbqTypes.InitMessa
       if (messageSize === undefined) {
         const messageSizeBuffer = stream.read(4)
         if (messageSizeBuffer === null) {
+          if (debug) {
+            console.log('protocolRead:', 'received no data trying to read message size')
+          }
           return
         }
 
-        messageSize = messageSizeBuffer.readUInt32BE(0)
+        messageSize = messageSizeBuffer.readUInt32BE(0) as number
+
+        if (debug) {
+          console.log('protocolRead:', `read message size ${messageSize}`)
+        }
       }
 
       const messageBuffer = stream.read(messageSize)
       if (messageBuffer === null) {
+        if (debug) {
+          console.log('protocolRead:', 'received no data trying to read message')
+        }
         return
       }
-      resolve(JSON.parse(messageBuffer.toString('utf8')))
+
+      const message = messageBuffer.toString('utf8') as string
+      if (debug) {
+        console.log('protocolRead:', `read message ${message}`)
+      }
+
+      resolve(JSON.parse(message))
     }
 
     const closeHandler = () => {
