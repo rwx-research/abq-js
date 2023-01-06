@@ -104,15 +104,15 @@ export function protocolReader(stream: Readable, handler: (message: AbqTypes.Ini
     buffer = Buffer.concat([buffer, chunk], buffer.length + chunk.length)
     if (buffer.length >= 4) {
       messageSize = buffer.readUInt32BE(0)
+      buffer = buffer.subarray(4)
     }
     if (messageSize && buffer.length >= messageSize + 4) {
       // We now know the whole message is available; get it.
-      const currentMessage = buffer.toString('utf8', 4, 4 + messageSize)
+      const currentMessage = buffer.toString('utf8')
 
       // There might be an additional message waiting for us behind the one we
       // just parsed. Reset the buffer to this new message.
-      const newBuffer = buffer.subarray(4 + messageSize)
-      buffer = newBuffer
+      buffer = buffer.subarray(messageSize)
 
       await handler(JSON.parse(currentMessage))
     } else if (debug) {
