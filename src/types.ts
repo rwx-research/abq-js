@@ -133,7 +133,7 @@ export interface IncrementalTestResultStep {
 
 export interface IncrementalTestResultDone {
   type: 'incremental_result_done'
-  last_test_result: TestResult
+  last_test_result?: TestResult
 }
 
 export interface NativeRunnerSpecification {
