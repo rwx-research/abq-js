@@ -124,7 +124,7 @@ export function protocolReader(stream: Readable, handler: (message: AbqTypes.Ini
       messageSize = buffer.readUInt32BE(0)
       buffer = buffer.subarray(4)
     }
-    if (messageSize && buffer.length >= messageSize + 4) {
+    if (messageSize && buffer.length >= messageSize) {
       // We now know the whole message is available; get it.
       const currentMessage = buffer.toString('utf8')
 
