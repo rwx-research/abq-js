@@ -1,10 +1,11 @@
 import { Socket } from 'net'
 import { AbqConfiguration } from './configuration'
 import { protocolWrite, spawnedMessage, SpawnedMessageInterface } from './protocol'
+import type { Connection } from './types'
 
 export async function connect(
   abqConfig: AbqConfiguration,
-  { adapterName, adapterVersion, testFramework, testFrameworkVersion }: SpawnedMessageInterface): Promise<Socket> {
+  { adapterName, adapterVersion, testFramework, testFrameworkVersion }: SpawnedMessageInterface): Promise<Connection> {
   if (!abqConfig.enabled) {
     throw new Error('abq must be enabled to connect')
   }

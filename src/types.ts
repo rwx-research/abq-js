@@ -1,3 +1,7 @@
+import type * as net from 'net'
+
+export type Connection = net.Socket
+
 export interface Test {
   type: 'test'
   id: string
