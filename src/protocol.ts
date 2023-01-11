@@ -102,40 +102,54 @@ export async function protocolRead(stream: Readable, { debug } = { debug: false 
 }
 
 /**
- * Reads messages using the standard 4-byte header protocol.
- *
- * Combining this with the `protocolRead` method will have unexpected consequences
+ * Attaches to the `data` handler on a stream, continually reading messages using the standard 4-byte header protocol.
  *
  * When a new message is received, `handler` is called.
+ *
+ * NOTE: This should not be used in combination with `protocolRead`, as both
+ * methods take over the `data` event.
  */
 export function protocolReader(stream: Readable, handler: (message: AbqTypes.InitMessage | AbqTypes.TestCaseMessage) => Promise<void>, { debug } = { debug: false }) {
   let buffer = Buffer.from('')
-  let messageSize: number | undefined
+  let messageSize: number | null = null
+
+  async function tryProcessBufferMessage(newChunk: Uint8Array | null) {
+    if (newChunk !== null) {
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      buffer = Buffer.concat([buffer, newChunk], buffer.length + newChunk.length)
+    }
+
+    if (messageSize === null && buffer.length >= 4) {
+      messageSize = buffer.readUInt32BE(0)
+      buffer = buffer.subarray(4)
+    }
+    if (messageSize && buffer.length >= messageSize) {
+      // We now know the whole message is available; get it.
+      const currentMessage = buffer.subarray(0, messageSize).toString('utf8')
+
+      // There might be an additional message waiting for us behind the one we
+      // just parsed. Reset the buffer to this new message.
+      buffer = buffer.subarray(messageSize)
+      messageSize = null
+
+      await handler(JSON.parse(currentMessage))
+
+      if (buffer.length > 0) {
+        // There is more in the buffer waiting behind the message we just
+        // parsed; in fact, it may be a whole message waiting to be processed.
+        await tryProcessBufferMessage(null)
+      }
+    } else if (debug) {
+      console.log('READER:', 'Incomplete chunk, waiting for next chunk')
+    }
+  }
 
   stream.on('data', async chunk => {
     if (debug) {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       console.log('READER:', `Received chunk: ${chunk.toString()}`)
     }
-
-    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-    buffer = Buffer.concat([buffer, chunk], buffer.length + chunk.length)
-    if (buffer.length >= 4) {
-      messageSize = buffer.readUInt32BE(0)
-      buffer = buffer.subarray(4)
-    }
-    if (messageSize && buffer.length >= messageSize) {
-      // We now know the whole message is available; get it.
-      const currentMessage = buffer.toString('utf8')
-
-      // There might be an additional message waiting for us behind the one we
-      // just parsed. Reset the buffer to this new message.
-      buffer = buffer.subarray(messageSize)
-
-      await handler(JSON.parse(currentMessage))
-    } else if (debug) {
-      console.log('READER:', 'Incomplete chunk, waiting for next chunk')
-    }
+    await tryProcessBufferMessage(chunk)
   })
 }
 
