@@ -102,11 +102,12 @@ export async function protocolRead(stream: Readable, { debug } = { debug: false 
 }
 
 /**
- * Reads messages using the standard 4-byte header protocol.
- *
- * Combining this with the `protocolRead` method will have unexpected consequences
+ * Attaches to the `data` handler on a stream, continually reading messages using the standard 4-byte header protocol.
  *
  * When a new message is received, `handler` is called.
+ *
+ * NOTE: This should not be used in combination with `protocolRead`, as both
+ * methods take over the `data` event.
  */
 export async function protocolReader(stream: Readable, handler: (message: AbqTypes.InitMessage | AbqTypes.TestCaseMessage) => Promise<void>, { debug } = { debug: false }) {
   let message = await protocolRead(stream, { debug })
