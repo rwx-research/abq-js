@@ -39,7 +39,12 @@ export interface TestCaseMessage {
   test_case: {
     id: string
     meta: Record<string, any>
+    focus?: TestFocus
   }
+}
+
+export interface TestFocus {
+  test_ids: string[]
 }
 
 export type Nanoseconds = number
