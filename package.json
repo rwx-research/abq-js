@@ -1,6 +1,6 @@
 {
   "name": "@rwx-research/abq",
-  "version": "0.1.0-alpha.12",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/rwx-research/abq-js.git"
